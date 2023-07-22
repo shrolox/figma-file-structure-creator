@@ -4,6 +4,8 @@ interface FileStructure {
 
 interface Component {
   key: string;
+  inFrame: boolean;
+  useAsThumbnail: boolean;
 }
 
 interface Page {
@@ -25,10 +27,10 @@ const FILE_TYPES: FileStructure = {
     {name: "↳ 🔴 [Page Name]", components: []},
     {name: "↳ 🟢 [Page Name]", components: []},
     {name: " ", components: []},
-    {name: "🔭 Exploration", components: []},
+    {name: "🔭 Exploration", components: [{key: "68c73e3ed43358ff7da44e6c7d88f666b0f2062e", inFrame: true, useAsThumbnail: false}]},
     {name: " ", components: []},
     {name: "🌄 Cover", components: [
-      {key: "f7d5039c12c535a4b441b1ab0ddc21dd1a758017"}
+      {key: "f7d5039c12c535a4b441b1ab0ddc21dd1a758017", inFrame: true, useAsThumbnail: true}
     ]},
     {name: "📦 Archive", components: []}
   ],
@@ -40,7 +42,7 @@ const FILE_TYPES: FileStructure = {
     {name: "↳ 🟢 [Page Name]", components: []},
     {name: " ", components: []},
     {name: "🌄 Cover", components: [
-      {key: "68c73e3ed43358ff7da44e6c7d88f666b0f2062e"}
+      {key: "68c73e3ed43358ff7da44e6c7d88f666b0f2062e", inFrame: true, useAsThumbnail: true}
     ]},
     {name: "📦 Archive", components: []}
   ]
@@ -84,10 +86,23 @@ function createPages(fileType: string) {
     page.name = pageStruct.name;
     // create components
     pageStruct.components.forEach((component: Component) => {
-      console.log("component", component.key)
       figma.importComponentByKeyAsync(component.key).then((node) => {
-        console.log("component imported", component.key)
-        page.appendChild(node.createInstance());
+        // create a frame and append the component to it
+        const frame = figma.createFrame();
+        const componentInstance = node.createInstance();
+
+        if (component.inFrame) {
+          frame.resize(componentInstance.width, componentInstance.height);
+          frame.appendChild(componentInstance);
+
+          page.appendChild(frame);
+          if (component.useAsThumbnail) {
+            frame.name = page.name;
+            figma.setFileThumbnailNodeAsync(frame);
+          }
+        } else {
+          page.appendChild(componentInstance);
+        }
       }).catch((err) => {
         console.log("component not found", err);
       })
