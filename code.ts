@@ -57,8 +57,6 @@ figma.ui.onmessage = msg => {
       deleteOtherPages(msg.payload.fileType);
     }
   }
-
-  figma.closePlugin();
 };
 
 function deleteOtherPages(fileType: string) {
