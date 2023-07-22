@@ -86,14 +86,13 @@ function createPages(fileType: string) {
     page.name = pageStruct.name;
     // create components
     pageStruct.components.forEach((component: Component) => {
-      const frame = figma.createFrame();
       console.log("component", component.key)
       figma.importComponentByKeyAsync(component.key).then((node) => {
+        console.log("component imported", component.key)
         page.appendChild(node.createInstance());
       }).catch((err) => {
         console.log("component not found", err);
       })
-      page.appendChild(frame);
     })
 
     figma.root.appendChild(page);
