@@ -13,6 +13,8 @@ interface Page {
   components: Component[];
 }
 
+const TEMPORARY_PAGE_NAME = "               ";
+
 const FILE_TYPES: FileStructure = {
   "ui": [
     {name: "ℹ️ Read me", components: []},
@@ -53,26 +55,21 @@ figma.showUI(__html__);
 figma.ui.onmessage = msg => {
   // create pages from array
   if (msg.type === 'create-file-structure') {
-    createPages(msg.payload.fileType);
-    console.log(msg.payload.deleteOtherPages);
+    createTemporaryPage();
     if (msg.payload.deleteOtherPages===true) {
       deleteOtherPages(msg.payload.fileType);
     }
+    createPages(msg.payload.fileType);
+    selectPage();
+    deleteTemporaryPage();
   }
 };
 
 function deleteOtherPages(fileType: string) {
   const pages = figma.root.children;
   pages.forEach((page: PageNode) => {
-    // delete pages that are not in the FILE_TYPES
-    const pageNames = FILE_TYPES[fileType].map((p: Page) => p.name);
-    if (!pageNames.includes(page.name)) {
-      // if a page we want to delete is selected, select the last page
-      if (page === figma.currentPage) {
-        figma.currentPage = figma.root.children[
-          figma.root.children.length-2
-        ];
-      }
+    // delete all pages except the temporary page
+    if (page.name !== TEMPORARY_PAGE_NAME) {
       page.remove();
     } 
   })
@@ -110,4 +107,29 @@ function createPages(fileType: string) {
 
     figma.root.appendChild(page);
   })
+}
+
+function createTemporaryPage() {
+  const page = figma.createPage();
+  page.name = TEMPORARY_PAGE_NAME;
+  figma.root.appendChild(page);
+  figma.currentPage =
+   page;
+}
+
+function deleteTemporaryPage() {
+  // find the temporary page and delete it
+  const pages = figma.root.children;
+  pages.forEach((page: PageNode) => {
+    if (page.name === TEMPORARY_PAGE_NAME) {
+      page.remove();
+    } 
+  })
+}
+
+function selectPage() {
+  // select the last page of the document
+  const pages = figma.root.children;
+  const lastPage = pages[pages.length - 2];
+  figma.currentPage = lastPage;
 }

@@ -38,3 +38,9 @@ We recommend writing TypeScript code using Visual Studio code:
     you reopen Visual Studio Code.
 
 That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+
+# TODO
+- [ ] Add Figma UI
+- [ ] Add variables
+- [ ] Move config to a separate yaml file
+- [ ] Clean README and Github repo
