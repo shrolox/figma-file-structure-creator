@@ -1,34 +1,75 @@
-// This plugin will open a window to prompt the user to enter a number, and
-// it will then create that many rectangles on the screen.
+interface FileStructure {
+  [key: string]: string[];
+}
 
-// This file holds the main code for plugins. Code in this file has access to
-// the *figma document* via the figma global object.
-// You can access browser APIs in the <script> tag inside "ui.html" which has a
-// full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
+const FILE_TYPES: FileStructure = {
+  "ui": [
+    "ℹ️ Read me",
+    " ",
+    "📚 ZH Documentation",
+    "🚹 Accessibility Annotations",
+    " ",
+    "💎 Style Guide",
+    "↳ Specifics Componants",
+    " ",
+    "🎨 UI - Mock Ups/ Design",
+    "↳ 🔴 [Page Name]",
+    "↳ 🟢 [Page Name]",
+    " ",
+    "🔭 Exploration",
+    " ",
+    "🌄 Cover",
+    "📦 Archive"
+  ],
+  "ux": [
+    "ℹ️ Read me",
+    " ",
+    "🩻 UX - Wireframes",
+    "↳ 🔴 [Page Name]",
+    "↳ 🟢 [Page Name]",
+    " ",
+    "🌄 Cover",
+    "📦 Archive"
+  ]
+}
 
-// This shows the HTML page in "ui.html".
 figma.showUI(__html__);
 
-// Calls to "parent.postMessage" from within the HTML page will trigger this
-// callback. The callback will be passed the "pluginMessage" property of the
-// posted message.
 figma.ui.onmessage = msg => {
-  // One way of distinguishing between different types of messages sent from
-  // your HTML page is to use an object with a "type" property like this.
-  if (msg.type === 'create-rectangles') {
-    const nodes: SceneNode[] = [];
-    for (let i = 0; i < msg.count; i++) {
-      const rect = figma.createRectangle();
-      rect.x = i * 150;
-      rect.fills = [{type: 'SOLID', color: {r: 1, g: 0.5, b: 0}}];
-      figma.currentPage.appendChild(rect);
-      nodes.push(rect);
+  // create pages from array
+  if (msg.type === 'create-file-structure') {
+    createPages(msg.payload.fileType);
+    console.log(msg.payload.deleteOtherPages);
+    if (msg.payload.deleteOtherPages===true) {
+      deleteOtherPages(msg.payload.fileType);
     }
-    figma.currentPage.selection = nodes;
-    figma.viewport.scrollAndZoomIntoView(nodes);
   }
 
-  // Make sure to close the plugin when you're done. Otherwise the plugin will
-  // keep running, which shows the cancel button at the bottom of the screen.
   figma.closePlugin();
 };
+
+function deleteOtherPages(fileType: string) {
+  const pages = figma.root.children;
+  pages.forEach((page: PageNode) => {
+    // delete pages that are not in the FILE_TYPES
+    if (!FILE_TYPES[fileType].includes(page.name)) {
+      // if a page we want to delete is selected, select the last page
+      if (page === figma.currentPage) {
+        figma.currentPage = figma.root.children[
+          figma.root.children.length-2
+        ];
+      }
+      page.remove();
+    } 
+  })
+}
+
+function createPages(fileType: string) {
+  // for the matching file type, create pages
+  const pages = FILE_TYPES[fileType];
+  pages.forEach((pageName: string) => {
+    const page = figma.createPage();
+    page.name = pageName;
+    figma.root.appendChild(page);
+  })
+}

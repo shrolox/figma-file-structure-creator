@@ -1,17 +1,37 @@
-<h2>Rectangle Creator</h2>
-<p>Count: <input id="count" value="5"></p>
+<h2>Select your file type</h2>
+<select id="file-type">
+  <option value="ui">UI</option>
+  <option value="ux">UX</option>
+</select>
+<div>
+  <label for="delete-other-pages">Delete other files</label>
+  <input type="checkbox" id="delete-other-pages" name="delete-other-pages" value="delete-other-pages">
+</div>
 <button id="create">Create</button>
 <button id="cancel">Cancel</button>
 <script>
 
 document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-rectangles', count } }, '*')
+  const typeSelector = document.getElementById('file-type');
+  const type = typeSelector.value;
+  const deleteOtherPages = document.getElementById('delete-other-pages');
+  parent.postMessage({
+    pluginMessage: {
+      type: 'create-file-structure',
+      payload: {
+        fileType: type,
+        deleteOtherPages: deleteOtherPages.checked
+      }
+    }
+  }, '*')
 }
 
 document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
+  parent.postMessage({
+    pluginMessage: {
+      type: 'cancel'
+    }
+  }, '*')
 }
 
 </script>
