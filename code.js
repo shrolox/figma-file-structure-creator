@@ -70,7 +70,7 @@ function createPages(fileType) {
             const frame = figma.createFrame();
             console.log("component", component.key);
             figma.importComponentByKeyAsync(component.key).then((node) => {
-                page.appendChild(node);
+                page.appendChild(node.createInstance());
             }).catch((err) => {
                 console.log("component not found", err);
             });
