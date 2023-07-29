@@ -1,16 +1,160 @@
+<style>
+  body {
+    /* Ajouter des polices externes */
+    font-family: 'Inter', sans-serif;
+    margin: 24px;
+    color: #FFFFFF;
+  }
+
+  html {
+    background-color: #2C2C2C;
+  }
+
+  #create {
+    background-color: #18A0FB;
+    color: #FFFFFF;
+    padding: 8px 16px;
+    margin-top: 20px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: none;
+    width: 100%;
+  }
+
+  select {
+    width: 100%;
+    background-color: #2C2C2C;
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+    border-radius: 2px;
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  /* Style the arrow inside the select element: */
+  .select-selected:after {
+    position: absolute;
+    content: "";
+    top: 14px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-color: #fff transparent transparent transparent;
+  }
+
+  /* Point the arrow upwards when the select box is open (active): */
+  .select-selected.select-arrow-active:after {
+    border-color: transparent transparent #fff transparent;
+    top: 7px;
+  }
+
+  #template {
+    background-color: #2C2C2C;
+    color: #999999;
+    padding: 8px 16px;
+    margin-top: 8px;
+    font-size: 14px;
+    border: none;
+    width: 100%;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  h2 {
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  /* Customize the label (the container) */
+  .container {
+    display: block;
+    position: relative;
+    padding-top: 24px;
+    padding-left: 20px;
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 12px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Hide the browser's default checkbox */
+  .container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+  }
+
+  /* Create a custom checkbox */
+  .checkmark {
+    position: absolute;
+    top: 26px;
+    left: 0;
+    height: 12px;
+    width: 12px;
+    border-radius: 2px;
+    background-color: #eee;
+  }
+
+  /* On mouse-over, add a grey background color */
+  .container:hover input ~ .checkmark {
+    background-color: #ccc;
+  }
+
+  /* When the checkbox is checked, add a blue background */
+  .container input:checked ~ .checkmark {
+    background-color: #18A0FB;
+  }
+
+  /* Create the checkmark/indicator (hidden when not checked) */
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+
+  /* Show the checkmark when checked */
+  .container input:checked ~ .checkmark:after {
+    display: block;
+  }
+
+  /* Style the checkmark/indicator */
+  .container .checkmark:after {
+    left: 4px;
+    top: 2px;
+    width: 2px;
+    height: 5px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+</style>
+
 <div id="home">
-  <h2>Select your file type</h2>
-  <select id="file-type">
-    <option value="ui">UI</option>
-    <option value="ux">UX</option>
-  </select>
-  <button onclick="navigateTo('templates-list')">My templates</button>
-  <div>
-    <label for="delete-other-pages">Delete other files</label>
-    <input type="checkbox" id="delete-other-pages" name="delete-other-pages" value="delete-other-pages" checked>
+  <h2>Select your template</h2>
+  <div class="custom-select">
+    <select id="file-type">
+      <option value="ui">UI</option>
+      <option value="ux">UX</option>
+    </select>
   </div>
-  <button id="create">Create</button>
-  <button id="cancel">Cancel</button>
+  <div>
+    <label class="container" for="delete-other-pages">Delete other files
+      <input type="checkbox" id="delete-other-pages" name="delete-other-pages" value="delete-other-pages" checked>
+      <span class="checkmark"></span>
+    </label>
+  </div>
+  <button id="create">Generate Structure</button>
+  <button id="template" onclick="navigateTo('templates-list')">Create New Template</button>
 </div>
 
 <script>
@@ -26,14 +170,6 @@
           deleteOtherPages: deleteOtherPages.checked
         }
       }
-    }, '*')
-  }
-
-  document.getElementById('cancel').onclick = () => {
-    parent.postMessage({
-      pluginMessage: {
-        type: 'cancel'
-      }
-    }, '*')
-  }
+    }, '*');
+  };
 </script>
