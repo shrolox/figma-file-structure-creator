@@ -35,6 +35,7 @@ const FILE_TYPES = {
     ]
 };
 figma.showUI(__html__);
+figma.ui.resize(300, 320) // resize the UI 
 figma.ui.onmessage = msg => {
     // create pages from array
     if (msg.type === 'create-file-structure') {
